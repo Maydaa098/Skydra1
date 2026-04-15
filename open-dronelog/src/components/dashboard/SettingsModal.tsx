@@ -12,8 +12,6 @@ import { Select } from '@/components/ui/Select';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { getBlacklist, getSyncFolderPath, removeFromBlacklist } from './FlightImporter';
 import { SMART_TAG_TYPES, getEnabledSmartTagTypes, setEnabledSmartTagTypes, SmartTagTypeId } from '@/lib/api';
-import { FaComments, FaDiscord, FaGithub } from 'react-icons/fa';
-import { FiBookOpen, FiGlobe, FiMail } from 'react-icons/fi';
 import { useIsMobileRuntime } from '@/hooks/platform/useIsMobileRuntime';
 
 interface SettingsModalProps {
@@ -87,8 +85,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     loadFlights,
     loadOverview,
     clearSelection,
-    donationAcknowledged,
-    setDonationAcknowledged,
     smartTagsEnabled,
     setSmartTagsEnabled,
     loadSmartTagsEnabled,
@@ -97,8 +93,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     isRegenerating,
     isRemovingAutoTags,
     regenerationProgress,
-    supporterBadgeActive,
-    setSupporterBadge,
     updateStatus,
     latestVersion,
     loadApiKeyType,
@@ -113,9 +107,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [localTimeFormat, setLocalTimeFormat] = useState<'12h' | '24h'>(timeFormat);
   const [isTimeFormatPending, startTimeFormatTransition] = useTransition();
 
-  const [showBadgeModal, setShowBadgeModal] = useState(false);
-  const [badgeCode, setBadgeCode] = useState('');
-  const [badgeMessage, setBadgeMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [unitsDropdownOpen, setUnitsDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -168,38 +159,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   // Derive light/dark for theme-aware styling
   const isLight = themeMode === 'light' || (themeMode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches);
-
-  const handleActivateBadge = async () => {
-    setBadgeMessage(null);
-    const trimmed = badgeCode.trim();
-    if (!trimmed) {
-      setBadgeMessage({ type: 'error', text: t('settings.enterCodeValidation') });
-      return;
-    }
-    try {
-      const valid = await api.verifySupporterCode(trimmed);
-      if (valid) {
-        setSupporterBadge(true);
-        setBadgeMessage({ type: 'success', text: '🎉 Supporter badge activated! Thank you for your support!' });
-        setBadgeCode('');
-      } else {
-        setBadgeMessage({ type: 'error', text: 'Error: Invalid code. Please check and try again.' });
-      }
-    } catch {
-      setBadgeMessage({ type: 'error', text: 'Error: Could not verify code.' });
-    }
-  };
-
-  const handleRemoveBadge = async () => {
-    try {
-      await api.removeSupporterBadge();
-    } catch (err) {
-      console.warn('Failed to remove supporter badge on backend:', err);
-    }
-    setSupporterBadge(false);
-    setBadgeMessage(null);
-    setShowBadgeModal(false);
-  };
 
   // True when any long-running destructive/IO operation is in progress
   const isBusy = isBackingUp || isRestoring || isDeleting || isRegenerating || isRemovingAutoTags;
@@ -1394,157 +1353,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             {/* Horizontal Divider for mobile */}
             <div className="md:hidden h-px w-full bg-gray-700 shrink-0" />
 
-            {/* Right Column: Donation, Support, Info & Data */}
+            {/* Right Column: Info & Data */}
             <div className="md:w-1/2 space-y-4 md:pl-5">
-              {/* Donation Status */}
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  {t('settings.donationStatus')}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!supporterBadgeActive) {
-                      setDonationAcknowledged(!donationAcknowledged);
-                    }
-                  }}
-                  className={`mt-2 flex items-center justify-between gap-3 w-full text-[0.85rem] text-gray-300 ${supporterBadgeActive ? 'opacity-60 cursor-not-allowed' : ''}`}
-                  aria-pressed={donationAcknowledged}
-                  disabled={supporterBadgeActive}
-                >
-                  <span>{t('settings.removeBanner')}</span>
-                  <span
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-all ${donationAcknowledged
-                      ? 'bg-drone-primary/90 border-drone-primary'
-                      : 'bg-drone-surface border-gray-600 toggle-track-off'
-                      }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${donationAcknowledged ? 'translate-x-4' : 'translate-x-1'
-                        }`}
-                    />
-                  </span>
-                </button>
-                {supporterBadgeActive && (
-                  <p className="text-xs text-amber-400/80 mt-1">{t('settings.badgeLocked')}</p>
-                )}
-
-                {/* Supporter Badge and Shop Buttons (Side-by-side) */}
-
-                <p className="mt-3 text-xs text-gray-500 leading-relaxed">
-                  {t('settings.supporterDescription', 'Show your love by supporting this project - your donation keeps development running and new features coming.')}
-                </p>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setShowBadgeModal(true); setBadgeMessage(null); setBadgeCode(''); }}
-                    className={`flex-1 py-2 px-3 rounded-lg border text-sm transition-colors ${supporterBadgeActive
-                      ? 'border-amber-500/50 text-amber-400 hover:bg-amber-500/10'
-                      : 'border-violet-500/50 text-violet-400 hover:bg-violet-500/10'
-                      }`}
-                  >
-                    <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">
-                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                      </svg>
-                      {supporterBadgeActive ? t('settings.manageBadge', 'Manage badge') : t('settings.getBadge', 'Get badge')}
-                    </span>
-                  </button>
-
-                  <a
-                    href="https://ko-fi.com/arpandesign/shop"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 rounded-lg border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 transition-colors text-sm flex items-center justify-center gap-1.5 no-underline whitespace-nowrap"
-                  >
-                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                      <line x1="3" y1="6" x2="21" y2="6"></line>
-                      <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                    {t('settings.exploreMore', 'Explore more')}
-                  </a>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                    {t('settings.needHelp', 'Need Help?')}
-                  </p>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
-                    <a
-                      href="https://github.com/arpanghosh8453/skydra/blob/main/docs/manual.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-cyan-500/10 hover:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-cyan-500/15 text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
-                        <FiBookOpen className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.docs', 'Docs')}
-                    </a>
-
-                    <a
-                      href="https://skydra.app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-emerald-500/10 hover:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
-                        <FiGlobe className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.website', 'Website')}
-                    </a>
-
-                    <a
-                      href="https://skydra.app/#about"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-sky-500/10 hover:border-sky-500/50 focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/15 text-sky-400 group-hover:bg-sky-500/20 transition-colors">
-                        <FiMail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.contact', 'Contact')}
-                    </a>
-
-                    <a
-                      href="https://github.com/arpanghosh8453/skydra/issues/new/choose"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-rose-500/10 hover:border-rose-500/50 focus:outline-none focus:ring-2 focus:ring-rose-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-500/15 text-rose-400 group-hover:bg-rose-500/20 transition-colors">
-                        <FaGithub className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.reportBug', 'Issues')}
-                    </a>
-
-                    <a
-                      href="https://github.com/arpanghosh8453/skydra/discussions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-amber-500/10 hover:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-amber-500/15 text-amber-400 group-hover:bg-amber-500/20 transition-colors">
-                        <FaComments className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.discussion', 'Discussion')}
-                    </a>
-
-                    <a
-                      href="https://discord.gg/YKgKTmSm7B"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group px-3 py-2 rounded-lg border border-gray-700 text-gray-200 bg-drone-dark/60 hover:bg-indigo-500/10 hover:border-indigo-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all text-sm font-medium flex items-center justify-center gap-2 no-underline"
-                    >
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-indigo-500/15 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors">
-                        <FaDiscord className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                      </span>
-                      {t('settings.discord', 'Discord')}
-                    </a>
-                  </div>
-                </div>
-              </div>
 
               {/* Info Section */}
               <div className="pt-4 border-t border-gray-700">
@@ -1892,103 +1702,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               >
                 {isClearingSelectedBlacklist ? t('settings.clearingSelectedLogs') : t('settings.clearSelectedFromBlacklist')}
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Supporter Badge Activation Modal */}
-      {showBadgeModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowBadgeModal(false)}
-          />
-          <div className="relative bg-drone-secondary rounded-xl border border-gray-700 shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                {t('settings.supporterBadge')}
-              </h3>
-              <button
-                onClick={() => setShowBadgeModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-4 space-y-4">
-              {supporterBadgeActive ? (
-                <>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                    <svg className="w-5 h-5 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    <p className="text-sm text-amber-300">Your supporter badge is active. Thank you for supporting this project!</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveBadge}
-                    className="w-full py-2 px-3 rounded-lg border border-red-600 text-red-500 hover:bg-red-500/10 transition-colors text-sm"
-                  >
-                    {t('settings.removeBadge')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2 text-sm text-gray-300">
-                    <p className="flex gap-2">
-                      <span className="text-drone-primary font-semibold shrink-0">1.</span>
-                      <span>
-                        Visit{' '}
-                        <a
-                          href="https://ko-fi.com/s/e06c1d4359"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-drone-primary hover:underline font-medium"
-                        >
-                          this page
-                        </a>
-                        {' '}to get your supporter code.
-                      </span>
-                    </p>
-                    <p className="flex gap-2">
-                      <span className="text-drone-primary font-semibold shrink-0">2.</span>
-                      <span>Enter the code below to activate your Supporter Badge.</span>
-                    </p>
-                  </div>
-                  <div>
-                    <input
-                      type="text"
-                      value={badgeCode}
-                      onChange={(e) => setBadgeCode(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleActivateBadge(); }}
-                      placeholder={t('settings.enterSupporterCode')}
-                      className="input w-full"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleActivateBadge}
-                      disabled={!badgeCode.trim()}
-                      className="btn-primary w-full mt-3"
-                    >
-                      {t('settings.activateBadge')}
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {badgeMessage && (
-                <p className={`text-sm text-center ${badgeMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-                  {badgeMessage.text}
-                </p>
-              )}
             </div>
           </div>
         </div>

@@ -47,8 +47,6 @@
 - [Project Structure](#project-structure)
 - [How to obtain your own DJI Developer API key](#how-to-obtain-your-own-dji-developer-api-key)
 - [Contribution Guidelines](#contribution-guidelines)
-- [Socials and Support](#socials-and-support)
-- [Love this project?](#love-this-project)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -546,35 +544,6 @@ See the guide: [custom parser documentation](/docs/custom_parsers.md).
 
 Check out the [Open Drone Log telemetry overlay poject](https://github.com/arpanghosh8453/opendronelog-overlay) for details on how to export overlay telemetry data on your videos.
 
-
-## Socials and Support
-
-<p align="center">
-    <a href="https://discord.gg/YKgKTmSm7B">
-        <img src="https://img.shields.io/badge/Discord-Join%20Server-5865F2?style=for-the-badge&logo=discord" alt="Discord" height="48"/>
-    </a>
-    &nbsp;&nbsp;
-    <a href="https://opendronelog.com/#about">
-        <img src="https://img.shields.io/badge/Contact-Get%20in%20Touch-0EA5E9?style=for-the-badge" alt="Contact" height="48"/>
-    </a>
-</p>
-
-## Love this project?
-
-I'm thrilled that you're using this dashboard. Your interest and engagement mean a lot to me! You can view and analyze more detailed DJI flight statistics with this setup than paying for any commertial solution.
-
-> [!NOTE]
-> I am a big drone enthusiast myself, and currently fundraising for a DJI Neo 2 drone for myself to test the new features of this budget friendly drone. If you'd like to support this goal, please consider [donating here](https://ko-fi.com/arpandesign/goal).
-
-Maintaining and improving this project takes a significant amount of my free time. Your support helps keep me motivated to add new features and work on similar projects that benefit the community.
-
-If you find this project helpful, please consider:
-
-⭐ Starring this repository to show your support and spread the news!
-
-☕ Buying me a coffee if you'd like to contribute to its maintenance and future development.
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/arpandesign)
 
 ## License
 
