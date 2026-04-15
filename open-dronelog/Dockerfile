@@ -94,7 +94,7 @@ RUN python3 -m venv /opt/parser-venv && \
 ENV PATH="/opt/parser-venv/bin:${PATH}"
 
 # Copy backend binary
-COPY --from=backend-builder /build/src-tauri/target/release/open-dronelog /app/open-dronelog
+COPY --from=backend-builder /build/src-tauri/target/release/skydra /app/skydra
 
 # Copy frontend build
 COPY --from=frontend-builder /build/dist /usr/share/nginx/html
