@@ -307,7 +307,7 @@
     "clearBatterySelection": "Kiválasztás törlése",
     "lastMaintenance": "Utolsó karbantartás: {{date}}",
     "never": "Soha",
-    "maintenanceDone": "✓ Karbantartás Kész",
+    "maintenanceDone": "✓ Karbantartás Kész"
   },
   "importer": {
     "importFlightLog": "Drón repülési napló importálása",
