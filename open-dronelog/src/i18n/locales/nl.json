@@ -303,9 +303,7 @@
     "clearBatterySelection": "Selectie wissen",
     "lastMaintenance": "Laatste onderhoud: {{date}}",
     "never": "Nooit",
-    "maintenanceDone": "✓ Onderhoud Uitgevoerd",
-    "save": "Opslaan",
-    "cancel": "Annuleren"
+    "maintenanceDone": "✓ Onderhoud Uitgevoerd"
   },
   "importer": {
     "importFlightLog": "Importeer een dronevluchtlog",

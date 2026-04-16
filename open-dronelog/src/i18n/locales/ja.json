@@ -303,9 +303,7 @@
     "clearBatterySelection": "選択をクリア",
     "lastMaintenance": "最終メンテナンス: {{date}}",
     "never": "なし",
-    "maintenanceDone": "✓ メンテナンス完了",
-    "save": "保存",
-    "cancel": "キャンセル"
+    "maintenanceDone": "✓ メンテナンス完了"
   },
   "importer": {
     "importFlightLog": "ドローンフライトログをインポート",

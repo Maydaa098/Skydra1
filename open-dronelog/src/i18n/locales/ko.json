@@ -303,9 +303,7 @@
     "clearBatterySelection": "선택 지우기",
     "lastMaintenance": "마지막 정비: {{date}}",
     "never": "없음",
-    "maintenanceDone": "✓ 정비 완료",
-    "save": "저장",
-    "cancel": "취소"
+    "maintenanceDone": "✓ 정비 완료"
   },
   "importer": {
     "importFlightLog": "드론 비행 로그 가져오기",

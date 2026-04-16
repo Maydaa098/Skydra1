@@ -301,9 +301,7 @@
     "clearBatterySelection": "Wyczyść wybór",
     "lastMaintenance": "Ostatnia konserwacja: {{date}}",
     "never": "Nigdy",
-    "maintenanceDone": "✓ Konserwacja Wykonana",
-    "save": "Zapisz",
-    "cancel": "Anuluj"
+    "maintenanceDone": "✓ Konserwacja Wykonana"
   },
   "importer": {
     "importFlightLog": "Importuj dziennik lotu drona",

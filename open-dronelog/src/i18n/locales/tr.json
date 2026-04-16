@@ -307,7 +307,7 @@
     "clearBatterySelection": "Seçimi temizle",
     "lastMaintenance": "Son bakım: {{date}}",
     "never": "Asla",
-    "maintenanceDone": "✓ Bakım Tamamlandı",
+    "maintenanceDone": "✓ Bakım Tamamlandı"
   },
   "importer": {
     "importFlightLog": "Drone uçuş günlüğünü içe aktar",
